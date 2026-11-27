@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #222;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .user {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 10px;
+            color: #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🏆 Scoreboard</h1>
+
+    <div class="card">
+        <h2>Add new score</h2>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Username"
+        >
+
+        <input
+            type="number"
+            id="score"
+            placeholder="Score"
+        >
+
+        <button onclick="addScore()">
+            Add score
+        </button>
+
+        <p id="message"></p>
+    </div>
+
+    <div class="card">
+        <h2>Leaderboard</h2>
+
+        <div id="users">
+            Loading...
+        </div>
+    </div>
+
+</div>
+
+<script>
+    async function loadScores() {
+        const container = document.getElementById("users");
+
+        try {
+            const response = await fetch("/api/scores");
+
+            if (!response.ok) {
+                throw new Error("Failed to load scores");
+            }
+
+            const data = await response.json();
+
+            container.innerHTML = "";
+
+            data.forEach(user => {
+                const row = document.createElement("div");
+                row.className = "user";
+
+                const name = document.createElement("span");
+                name.textContent = user.username;
+
+                const score = document.createElement("span");
+                score.className = "score";
+                score.textContent = user.score;
+
+                row.append(name, score);
+                container.appendChild(row);
+            });
+
+            if (data.length === 0) {
+                container.textContent = "No scores yet.";
+            }
+
+        } catch (error) {
+            container.textContent = "Error loading data.";
+            console.error(error);
+        }
+    }
+
+    async function addScore() {
+        const username = document.getElementById("username").value;
+        const score = document.getElementById("score").value;
+        const message = document.getElementById("message");
+
+        if (!username.trim() || score === "") {
+            message.style.color = "red";
+            message.textContent = "Fill in all fields!";
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    score: Number(score)
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add score");
+            }
+
+            message.style.color = "green";
+            message.textContent = "Score added successfully!";
+
+            document.getElementById("username").value = "";
+            document.getElementById("score").value = "";
+
+            loadScores();
+
+        } catch (error) {
+            message.style.color = "red";
+            message.textContent = "Something went wrong.";
+            console.error(error);
+        }
+    }
+
+    loadScores();
+</script>
+
+</body>
+</html>
