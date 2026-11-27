@@ -5,12 +5,12 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv('DB_KEY.env', override=True)
+load_dotenv('DB_CONFIG.env', override=True)
 
 app = FastAPI()
 
-DATABASE_URL = "https://geqamaqkgjuwvqsuhdcm.supabase.co/rest/v1/scores"
-API_KEY = os.getenv("DB_KEY")
+DATABASE_URL = os.getenv("DB_URL") # Is in the DB_CONFIG.env file as DB_URL, insert your own to make this code work.
+API_KEY = os.getenv("DB_KEY") # Is in the DB_CONFIG.env file as DB_KEY, insert your own to make this code work.
 
 class Query(BaseModel):
     username: str
