@@ -42,9 +42,9 @@ Wykorzystane technologie mogą ulec zmianie podczas tworzenia projektu.
 
 | Metoda | Endpoint | Opis |
 |---|---|---|
-| `POST` | `/api/scores` | Zapis nowego wyniku |
-| `GET` | `/api/leaderboard` | Pobranie rankingu |
-| `GET` | `/api/players/{player_id}/scores` | Pobranie historii wyników gracza |
+| `POST` | `/api/post` | Zapis nowego wyniku |
+| `GET` | `/api/scores` | Pobranie rankingu |
+| `GET` | `/api/scores/{player_id}/` | Pobranie historii wyników gracza |
 
 Szczegóły dotyczące API zostaną ustalone w trakcie implementacji projektu.
 
